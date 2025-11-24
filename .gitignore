@@ -37,3 +37,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Supabase
+.branches
+.temp
+supabase/.branches
+supabase/.temp

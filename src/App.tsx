@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import GameBoard from './components/GameBoard';
 import GameControls from './components/GameControls';
 import ManualPlacement from './components/ManualPlacement';
+import Leaderboard from './components/Leaderboard';
+import ScoreSubmission from './components/ScoreSubmission';
 import type { GameState, Player, Coordinate } from './game/types';
 import {
   createPlayer,
@@ -50,6 +52,13 @@ const App: React.FC = () => {
     shipsToPlace: ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer'] as const,
   });
 
+  // Timer and leaderboard state
+  const [gameStartTime, setGameStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [movesCount, setMovesCount] = useState(0);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showScoreSubmission, setShowScoreSubmission] = useState(false);
+
   const initializeGame = useCallback(() => {
     const player = createPlayer('p1', 'Player');
     const opponent = placeShipsRandomly(createPlayer('cpu', 'Computer', true), allowAdjacent);
@@ -74,6 +83,19 @@ const App: React.FC = () => {
     });
   }, [allowAdjacent, placementMode]);
 
+  // Timer effect
+  useEffect(() => {
+    let interval: number | undefined;
+    if (gameState.status === 'playing' && gameStartTime) {
+      interval = window.setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - gameStartTime) / 1000));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState.status, gameStartTime]);
+
   useEffect(() => {
     initializeGame();
   }, [initializeGame]);
@@ -84,10 +106,17 @@ const App: React.FC = () => {
       return;
     }
     setGameState(prev => ({ ...prev, status: 'playing' }));
+    setGameStartTime(Date.now());
+    setElapsedTime(0);
+    setMovesCount(0);
   };
 
   const handleResetGame = () => {
     initializeGame();
+    setGameStartTime(null);
+    setElapsedTime(0);
+    setMovesCount(0);
+    setShowScoreSubmission(false);
   };
 
   const handleRandomizeShips = () => {
@@ -151,6 +180,9 @@ const App: React.FC = () => {
 
     if (result === 'already-attacked') return;
 
+    // Increment moves count for valid attacks
+    setMovesCount(prev => prev + 1);
+
     const isWin = checkWin(newOpponent);
 
     if (isWin) {
@@ -160,6 +192,8 @@ const App: React.FC = () => {
         status: 'gameOver',
         winner: 'Player',
       }));
+      // Show score submission modal
+      setShowScoreSubmission(true);
       return;
     }
 
@@ -218,10 +252,36 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-indigo-100 text-slate-800 flex flex-col items-center py-8 px-4 font-sans">
       <header className="mb-8 text-center">
-        <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2 tracking-tight drop-shadow-sm">
-          Battleship
-        </h1>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight drop-shadow-sm">
+            Battleship
+          </h1>
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            className="p-2 bg-yellow-400 hover:bg-yellow-500 rounded-full shadow-lg transition-colors"
+            title="View Leaderboard"
+          >
+            🏆
+          </button>
+        </div>
         <p className="text-slate-500 font-medium">Command your fleet and destroy the enemy!</p>
+
+        {/* Timer Display */}
+        {gameState.status === 'playing' && (
+          <div className="mt-4 inline-flex items-center gap-4 bg-white/60 px-6 py-2 rounded-full shadow-md">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-600 font-medium">⏱️ Time:</span>
+              <span className="font-mono text-lg font-bold text-blue-600">
+                {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
+              </span>
+            </div>
+            <div className="w-px h-6 bg-slate-300"></div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-600 font-medium">🎯 Moves:</span>
+              <span className="font-bold text-indigo-600">{movesCount}</span>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="w-full max-w-5xl flex flex-col gap-8">
@@ -293,6 +353,25 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Leaderboard Modal */}
+      {showLeaderboard && (
+        <Leaderboard onClose={() => setShowLeaderboard(false)} />
+      )}
+
+      {/* Score Submission Modal */}
+      {showScoreSubmission && (
+        <ScoreSubmission
+          completionTime={elapsedTime}
+          movesCount={movesCount}
+          aiDifficulty={aiDifficulty}
+          onClose={() => setShowScoreSubmission(false)}
+          onSuccess={() => {
+            setShowScoreSubmission(false);
+            setShowLeaderboard(true);
+          }}
+        />
+      )}
     </div>
   );
 };
