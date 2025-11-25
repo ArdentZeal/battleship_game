@@ -17,6 +17,7 @@ vi.mock('../lib/multiplayer', () => ({
         subscribeToHover: vi.fn(() => () => { }),
         broadcastHover: vi.fn(),
         getRoom: vi.fn(),
+        getMoves: vi.fn().mockResolvedValue({ moves: [], error: null }),
         makeMove: vi.fn(),
         setWinner: vi.fn(),
     }

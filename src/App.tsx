@@ -48,9 +48,7 @@ const App: React.FC = () => {
     showMultiplayerLobby,
     setShowMultiplayerLobby,
     multiplayerRoom,
-    setMultiplayerRoom,
     playerType,
-    setPlayerType,
     multiplayerLoading,
     multiplayerError,
     isWaitingForOpponent,
@@ -384,6 +382,15 @@ const App: React.FC = () => {
           </>
         )}
       </header>
+
+      {multiplayerError && !showMultiplayerLobby && (
+        <div className="w-full max-w-2xl mb-6 animate-fade-in">
+          <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-6 py-4 rounded-xl flex items-center gap-3 shadow-lg backdrop-blur-sm">
+            <span className="text-2xl">⚠️</span>
+            <p className="font-medium">{multiplayerError}</p>
+          </div>
+        </div>
+      )}
 
       {hasSelectedMode && (
         <>

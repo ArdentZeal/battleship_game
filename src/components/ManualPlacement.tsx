@@ -2,6 +2,12 @@ import React from 'react';
 import type { ShipType } from '../game/types';
 import { SHIP_LENGTHS } from '../game/types';
 
+import aircraftCarrierImg from '../assets/boats/aircraft_carrier.png';
+import destroyerImg from '../assets/boats/destroyer.png';
+import frigateImg from '../assets/boats/frigate.png';
+import submarineImg from '../assets/boats/submarine.png';
+import patrolBoatImg from '../assets/boats/patrol_boat.png';
+
 interface ManualPlacementProps {
     shipsToPlace: ShipType[];
     currentShipIndex: number;
@@ -15,6 +21,14 @@ const SHIP_NAMES: Record<ShipType, string> = {
     frigate: 'Frigate',
     submarine: 'Submarine',
     patrolBoat: 'Patrol Boat',
+};
+
+const SHIP_IMAGES: Record<ShipType, string> = {
+    destroyer: destroyerImg,
+    aircraftCarrier: aircraftCarrierImg,
+    frigate: frigateImg,
+    submarine: submarineImg,
+    patrolBoat: patrolBoatImg,
 };
 
 const ManualPlacement: React.FC<ManualPlacementProps> = ({
@@ -34,8 +48,26 @@ const ManualPlacement: React.FC<ManualPlacementProps> = ({
                         <div className="text-lg font-bold text-text-primary">
                             Placing: {SHIP_NAMES[currentShip]}
                         </div>
-                        <div className="text-sm text-text-secondary">
+                        <div className="text-sm text-text-secondary mb-4">
                             Length: {SHIP_LENGTHS[currentShip]} cells
+                        </div>
+
+                        {/* Ship Image Preview */}
+                        <div className="flex justify-center items-center h-32 bg-main/30 rounded-lg mb-4 overflow-hidden relative">
+                            <div
+                                className="transition-all duration-300 ease-in-out"
+                                style={{
+                                    transform: orientation === 'vertical' ? 'rotate(90deg)' : 'rotate(0deg)',
+                                    width: `${SHIP_LENGTHS[currentShip] * 30}px`, // Approximate scale
+                                    maxWidth: '100%',
+                                }}
+                            >
+                                <img
+                                    src={SHIP_IMAGES[currentShip]}
+                                    alt={SHIP_NAMES[currentShip]}
+                                    className="w-full h-auto drop-shadow-lg"
+                                />
+                            </div>
                         </div>
                     </div>
 

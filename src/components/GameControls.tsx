@@ -154,10 +154,16 @@ const GameControls: React.FC<GameControlsProps> = ({
                     )}
 
                     <button
-                        onClick={onReset}
-                        className="px-6 py-2.5 bg-surface hover:bg-surface-hover text-text-primary rounded-full transition-all transform hover:scale-105 font-semibold shadow-md border border-border"
+                        onClick={gameMode === 'vsPlayer' ? onBackToMenu : onReset}
+                        className={`px-6 py-2.5 rounded-full transition-all transform hover:scale-105 font-semibold shadow-md border border-border ${gameMode === 'vsPlayer'
+                                ? 'bg-red-500/10 hover:bg-red-500/20 text-red-500 border-red-500/30'
+                                : 'bg-surface hover:bg-surface-hover text-text-primary'
+                            }`}
                     >
-                        {status === 'placement' ? 'Reset Board' : 'New Game'}
+                        {status === 'placement'
+                            ? (gameMode === 'vsPlayer' ? 'Leave Room' : 'Reset Board')
+                            : (gameMode === 'vsPlayer' ? 'Leave Game' : 'New Game')
+                        }
                     </button>
                 </div>
 
