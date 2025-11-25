@@ -3,7 +3,7 @@ export type Coordinate = {
     col: number;
 };
 
-export type ShipType = 'carrier' | 'battleship' | 'cruiser' | 'submarine' | 'destroyer';
+export type ShipType = 'destroyer' | 'aircraftCarrier' | 'frigate' | 'submarine' | 'patrolBoat';
 
 export interface Ship {
     id: string;
@@ -46,9 +46,9 @@ export interface GameState {
 export const BOARD_SIZE = 10;
 
 export const SHIP_LENGTHS: Record<ShipType, number> = {
-    carrier: 5,
-    battleship: 4,
-    cruiser: 3,
+    destroyer: 5,
+    aircraftCarrier: 4,
+    frigate: 3,
     submarine: 3,
-    destroyer: 2,
+    patrolBoat: 2,
 };

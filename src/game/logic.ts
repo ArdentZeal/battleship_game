@@ -4,7 +4,6 @@ import { SHIP_LENGTHS, BOARD_SIZE } from './types';
 // ... (rest of file)
 
 export const createBoard = (): Board => {
-    // console.log('createBoard called'); // Too noisy
     const board: Board = [];
     for (let row = 0; row < BOARD_SIZE; row++) {
         const currentRow: Cell[] = [];
@@ -136,32 +135,36 @@ export const getRandomOrientation = (): 'horizontal' | 'vertical' => {
     return Math.random() < 0.5 ? 'horizontal' : 'vertical';
 };
 
-export const placeShipsRandomly = (player: Player, allowAdjacent: boolean = false): Player => {
-    console.log('Placing ships randomly for', player.id, 'allowAdjacent:', allowAdjacent);
-    let currentPlayer = { ...player, board: createBoard(), ships: [] as Ship[] }; // Reset board
-    const shipTypes: ShipType[] = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer'];
+export function placeShipsRandomly(player: Player, allowAdjacent: boolean): Player {
+    const shipTypes: (keyof typeof SHIP_LENGTHS)[] = ['destroyer', 'aircraftCarrier', 'frigate', 'submarine', 'patrolBoat'];
+    let updatedPlayer: Player = { ...player, board: createBoard(), ships: [] as Ship[] };
 
-    for (const type of shipTypes) {
+    for (const shipType of shipTypes) {
         let placed = false;
         let attempts = 0;
-        while (!placed && attempts < 100) {
-            attempts++;
-            const start = getRandomCoordinate();
-            const orientation = getRandomOrientation();
-            try {
-                currentPlayer = placeShip(currentPlayer, type, start, orientation, allowAdjacent);
+        const maxAttempts = 100;
+
+        while (!placed && attempts < maxAttempts) {
+            const row = Math.floor(Math.random() * BOARD_SIZE);
+            const col = Math.floor(Math.random() * BOARD_SIZE);
+            const orientation: 'horizontal' | 'vertical' = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+            const start: Coordinate = { row, col };
+            const length = SHIP_LENGTHS[shipType];
+
+            if (isValidPlacement(updatedPlayer.board, start, length, orientation, allowAdjacent)) {
+                updatedPlayer = placeShip(updatedPlayer, shipType, start, orientation, allowAdjacent);
                 placed = true;
-            } catch (e) {
-                // Retry
             }
+
+            attempts++;
         }
+
         if (!placed) {
-            console.error(`Failed to place ship ${type} after 100 attempts`);
-            // Should probably handle this better, but for now just log
+            throw new Error(`Could not place ship ${shipType} after ${maxAttempts} attempts`);
         }
     }
-    console.log('Finished placing ships for', player.id);
-    return currentPlayer;
+
+    return updatedPlayer;
 };
 
 export const receiveAttack = (player: Player, coordinate: Coordinate): { player: Player; result: 'hit' | 'miss' | 'sunk' | 'already-attacked' } => {
@@ -177,7 +180,7 @@ export const receiveAttack = (player: Player, coordinate: Coordinate): { player:
     let result: 'hit' | 'miss' | 'sunk' = 'miss';
 
     if (cell.status === 'ship') {
-        newBoard[row][col].status = 'hit';
+        newBoard[row][col] = { ...newBoard[row][col], status: 'hit' };
         result = 'hit';
 
         const shipIndex = newShips.findIndex(s => s.id === cell.shipId);
@@ -189,7 +192,7 @@ export const receiveAttack = (player: Player, coordinate: Coordinate): { player:
             }
         }
     } else {
-        newBoard[row][col].status = 'miss';
+        newBoard[row][col] = { ...newBoard[row][col], status: 'miss' };
     }
 
     return {
@@ -332,4 +335,54 @@ export const updateAIStateAfterAttack = (
 
 export const checkWin = (player: Player): boolean => {
     return player.ships.every(ship => ship.sunk);
+};
+
+export const extractShipsFromBoard = (board: Board): Ship[] => {
+    const shipsMap = new Map<string, {
+        id: string;
+        type: ShipType;
+        position: Coordinate[];
+        hits: number;
+    }>();
+
+    for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+            const cell = board[row][col];
+            if (cell.shipId) {
+                if (!shipsMap.has(cell.shipId)) {
+                    // Parse type from ID (format: type-timestamp)
+                    const type = cell.shipId.split('-')[0] as ShipType;
+                    shipsMap.set(cell.shipId, {
+                        id: cell.shipId,
+                        type,
+                        position: [],
+                        hits: 0
+                    });
+                }
+                const ship = shipsMap.get(cell.shipId)!;
+                ship.position.push({ row, col });
+                if (cell.status === 'hit') {
+                    ship.hits++;
+                }
+            }
+        }
+    }
+
+    return Array.from(shipsMap.values()).map(s => {
+        // Determine orientation
+        let orientation: 'horizontal' | 'vertical' = 'horizontal';
+        if (s.position.length > 1) {
+            orientation = s.position[0].row === s.position[1].row ? 'horizontal' : 'vertical';
+        }
+
+        return {
+            id: s.id,
+            type: s.type,
+            length: s.position.length,
+            hits: s.hits,
+            sunk: s.hits >= s.position.length,
+            position: s.position,
+            orientation
+        };
+    });
 };

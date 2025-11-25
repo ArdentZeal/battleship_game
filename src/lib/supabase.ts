@@ -15,17 +15,29 @@ export interface LeaderboardEntry {
     completion_time: number; // in seconds
     ai_difficulty: 'random' | 'smart';
     moves_count: number;
+    game_mode: 'vsAI' | 'vsPlayer';
     created_at: string;
 }
 
 export const leaderboardAPI = {
-    async getTopScores(aiDifficulty: 'random' | 'smart', limit = 10): Promise<LeaderboardEntry[]> {
-        const { data, error } = await supabase
+    async getTopScores(
+        aiDifficulty: 'random' | 'smart',
+        gameMode: 'vsAI' | 'vsPlayer' = 'vsAI',
+        limit = 10
+    ): Promise<LeaderboardEntry[]> {
+        let query = supabase
             .from('leaderboard')
             .select('*')
-            .eq('ai_difficulty', aiDifficulty)
+            .eq('game_mode', gameMode)
             .order('completion_time', { ascending: true })
             .limit(limit);
+
+        // Only filter by AI difficulty for vsAI games
+        if (gameMode === 'vsAI') {
+            query = query.eq('ai_difficulty', aiDifficulty);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching leaderboard:', error);

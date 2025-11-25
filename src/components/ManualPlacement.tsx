@@ -10,11 +10,11 @@ interface ManualPlacementProps {
 }
 
 const SHIP_NAMES: Record<ShipType, string> = {
-    carrier: 'Carrier',
-    battleship: 'Battleship',
-    cruiser: 'Cruiser',
-    submarine: 'Submarine',
     destroyer: 'Destroyer',
+    aircraftCarrier: 'Aircraft Carrier',
+    frigate: 'Frigate',
+    submarine: 'Submarine',
+    patrolBoat: 'Patrol Boat',
 };
 
 const ManualPlacement: React.FC<ManualPlacementProps> = ({
@@ -27,21 +27,21 @@ const ManualPlacement: React.FC<ManualPlacementProps> = ({
     const isComplete = currentShipIndex >= shipsToPlace.length;
 
     return (
-        <div className="flex flex-col gap-4 p-4 bg-white/60 rounded-2xl backdrop-blur-md border border-white/50 shadow-xl">
+        <div className="flex flex-col gap-4 p-4 bg-surface/60 rounded-2xl backdrop-blur-md border border-border shadow-xl">
             {!isComplete ? (
                 <>
                     <div className="text-center">
-                        <div className="text-lg font-bold text-slate-700">
+                        <div className="text-lg font-bold text-text-primary">
                             Placing: {SHIP_NAMES[currentShip]}
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <div className="text-sm text-text-secondary">
                             Length: {SHIP_LENGTHS[currentShip]} cells
                         </div>
                     </div>
 
                     <button
                         onClick={onRotate}
-                        className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition-all transform hover:scale-105 font-semibold shadow-lg shadow-indigo-200 flex items-center justify-center gap-2"
+                        className="px-6 py-2.5 bg-secondary hover:bg-secondary-hover text-white rounded-full transition-all transform hover:scale-105 font-semibold shadow-lg shadow-secondary/30 flex items-center justify-center gap-2"
                     >
                         <span>Rotate:</span>
                         <span className="font-mono">
@@ -50,17 +50,17 @@ const ManualPlacement: React.FC<ManualPlacementProps> = ({
                     </button>
 
                     <div className="space-y-2">
-                        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                        <div className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
                             Ships Remaining
                         </div>
                         {shipsToPlace.map((ship, index) => (
                             <div
                                 key={ship}
                                 className={`flex items-center gap-2 text-sm ${index < currentShipIndex
-                                        ? 'text-green-600 line-through'
-                                        : index === currentShipIndex
-                                            ? 'text-blue-600 font-bold'
-                                            : 'text-slate-400'
+                                    ? 'text-text-muted line-through'
+                                    : index === currentShipIndex
+                                        ? 'text-primary font-bold'
+                                        : 'text-text-secondary'
                                     }`}
                             >
                                 <span>
@@ -73,12 +73,12 @@ const ManualPlacement: React.FC<ManualPlacementProps> = ({
                         ))}
                     </div>
 
-                    <div className="text-xs text-slate-500 text-center italic">
+                    <div className="text-xs text-text-muted text-center italic">
                         Click on your board to place the ship
                     </div>
                 </>
             ) : (
-                <div className="text-center text-lg font-bold text-green-600">
+                <div className="text-center text-lg font-bold text-primary">
                     All ships placed! Ready to start.
                 </div>
             )}

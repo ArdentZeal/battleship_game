@@ -1,11 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     aiTurn,
     smartAiTurn,
     createAIState,
     updateAIStateAfterAttack,
+    createBoard,
+    placeShip,
+    createPlayer,
+    receiveAttack,
 } from '../game/logic';
-import { createPlayer, placeShip, receiveAttack } from '../game/logic';
+import type { AIState } from '../game/logic';
+import type { Player, Coordinate } from '../game/types';
 
 describe('AI Strategy Tests', () => {
     describe('Random AI (aiTurn)', () => {
@@ -81,7 +86,7 @@ describe('AI Strategy Tests', () => {
         describe('updateAIStateAfterAttack', () => {
             it('should switch to target mode after a hit', () => {
                 let player = createPlayer('p1', 'Player');
-                player = placeShip(player, 'carrier', { row: 5, col: 5 }, 'horizontal', true);
+                player = placeShip(player, 'destroyer', { row: 5, col: 5 }, 'horizontal', true);
 
                 const aiState = createAIState();
                 const attackCoord = { row: 5, col: 5 };
@@ -96,7 +101,7 @@ describe('AI Strategy Tests', () => {
 
             it('should add adjacent cells to target queue after hit', () => {
                 let player = createPlayer('p1', 'Player');
-                player = placeShip(player, 'carrier', { row: 5, col: 5 }, 'horizontal', true);
+                player = placeShip(player, 'destroyer', { row: 5, col: 5 }, 'horizontal', true);
 
                 const aiState = createAIState();
                 const attackCoord = { row: 5, col: 5 };
@@ -110,7 +115,7 @@ describe('AI Strategy Tests', () => {
 
             it('should detect horizontal direction after 2 hits', () => {
                 let player = createPlayer('p1', 'Player');
-                player = placeShip(player, 'carrier', { row: 5, col: 5 }, 'horizontal', true);
+                player = placeShip(player, 'destroyer', { row: 5, col: 5 }, 'horizontal', true);
 
                 let aiState = createAIState();
 
@@ -128,7 +133,7 @@ describe('AI Strategy Tests', () => {
 
             it('should detect vertical direction after 2 hits', () => {
                 let player = createPlayer('p1', 'Player');
-                player = placeShip(player, 'carrier', { row: 5, col: 5 }, 'vertical', true);
+                player = placeShip(player, 'destroyer', { row: 5, col: 5 }, 'vertical', true);
 
                 let aiState = createAIState();
 

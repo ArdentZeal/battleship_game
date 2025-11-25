@@ -1,17 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* Deep Ocean & Sky/Indigo Theme */
+  --color-bg-main: #0B1120;
+  --color-bg-surface: #151E32;
+  --color-bg-surface-hover: #1E293B;
+
+  --color-primary: #0EA5E9;
+  --color-primary-hover: #38BDF8;
+
+  --color-secondary: #6366F1;
+  --color-secondary-hover: #818CF8;
+
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+
+  --color-border: #334155;
+  --color-grid-line: #1E293B;
+  --color-ship-preview: #0EA5E9;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0f172a;
-  /* Slate 900 */
-  color: #f8fafc;
-  /* Slate 50 */
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+}
+
+/* Custom Utilities */
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.bg-radar-grid {
+  background-image:
+    linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center center;
+}
+
+.crosshair-cursor {
+  cursor: crosshair;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20%;
+  background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.05), transparent);
+  animation: scanline 3s linear infinite;
+  pointer-events: none;
 }

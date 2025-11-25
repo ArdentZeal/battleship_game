@@ -1,0 +1,39 @@
+
+> battleship-game@0.0.0 test
+> vitest src/test/ShipSync.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.13 [39m[90m/System/Volumes/Data/SAPDevelop/battleship-game[39m
+
+ [31m❯[39m src/test/ShipSync.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 12[2mms[22m[39m
+[31m     [31m×[31m should correctly identify sunk ships on opponent board during gameplay[39m[32m 11[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/ShipSync.test.tsx[2m > [22mShip Synchronization Logic[2m > [22mshould correctly identify sunk ships on opponent board during gameplay
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'then')[39m
+[36m [2m❯[22m src/hooks/useMultiplayerGame.ts:[2m213:59[22m[39m
+    [90m211| [39m
+    [90m212| [39m                // Fetch and replay all moves to ensure state is up to…
+    [90m213| [39m                multiplayerAPI.getMoves(multiplayerRoom.id).then(({ mo…
+    [90m   | [39m                                                          [31m^[39m
+    [90m214| [39m                    [35mif[39m (moves [33m&&[39m moves[33m.[39mlength [33m>[39m [34m0[39m) {
+    [90m215| [39m                        console.log(`Replaying ${moves.length} moves..…
+[90m [2m❯[22m Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:[2m25989:20[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m commitHookEffectListMount node_modules/react-dom/cjs/react-dom-client.development.js:[2m13249:29[22m[39m
+[90m [2m❯[22m commitHookPassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:[2m13336:11[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:[2m15484:13[22m[39m
+[90m [2m❯[22m recursivelyTraversePassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:[2m15439:11[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:[2m15519:11[22m[39m
+[90m [2m❯[22m flushPassiveEffects node_modules/react-dom/cjs/react-dom-client.development.js:[2m18432:9[22m[39m
+[90m [2m❯[22m node_modules/react-dom/cjs/react-dom-client.development.js:[2m17923:15[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 16:10:06
+[2m   Duration [22m 673ms[2m (transform 58ms, setup 71ms, collect 102ms, tests 12ms, environment 397ms, prepare 9ms)[22m
+
